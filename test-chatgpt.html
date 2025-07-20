@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget v2 - ChatGPT Integration Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-section h2 {
+            margin-top: 0;
+            color: #444;
+            font-size: 20px;
+        }
+        
+        .test-queries {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .query-pill {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .query-pill:hover {
+            background: #f0f0f0;
+            border-color: #6973FF;
+        }
+        
+        .query-pill.product {
+            border-color: #FF6C1F;
+            color: #FF6C1F;
+        }
+        
+        .query-pill.chatgpt {
+            border-color: #10a37f;
+            color: #10a37f;
+        }
+        
+        .status {
+            background: #e8f4fd;
+            border: 1px solid #bee5ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .status.error {
+            background: #fee;
+            border-color: #fcc;
+        }
+        
+        .status.success {
+            background: #e6f4ea;
+            border-color: #b7e4c7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat Widget v2 - ChatGPT Integration Test</h1>
+        <p class="subtitle">Test the integration between product queries and ChatGPT responses</p>
+        
+        <div class="status success">
+            <strong>✅ Server Status:</strong> Make sure server.js is running on port 3000
+        </div>
+        
+        <div class="test-section">
+            <h2>🛍️ Product Queries (Show Product Carousel)</h2>
+            <p>These queries will display product results:</p>
+            <div class="test-queries">
+                <div class="query-pill product" onclick="testQuery(this.textContent)">marques brownlee shoes</div>
+                <div class="query-pill product" onclick="testQuery(this.textContent)">MKBHD sneakers</div>
+                <div class="query-pill product" onclick="testQuery(this.textContent)">hiking shoes</div>
+                <div class="query-pill product" onclick="testQuery(this.textContent)">waterproof boots</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🤖 ChatGPT Queries (AI Responses)</h2>
+            <p>These queries will be sent to ChatGPT:</p>
+            <div class="test-queries">
+                <div class="query-pill chatgpt" onclick="testQuery(this.textContent)">What's the weather like?</div>
+                <div class="query-pill chatgpt" onclick="testQuery(this.textContent)">Tell me a joke</div>
+                <div class="query-pill chatgpt" onclick="testQuery(this.textContent)">How do I tie my shoes?</div>
+                <div class="query-pill chatgpt" onclick="testQuery(this.textContent)">What are the benefits of exercise?</div>
+                <div class="query-pill chatgpt" onclick="testQuery(this.textContent)">Explain quantum computing</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Instructions</h2>
+            <ol>
+                <li>Click on any query pill above to automatically enter it in the chat widget</li>
+                <li>Press Enter or wait for the search to execute</li>
+                <li>Product queries (orange) will show the product carousel</li>
+                <li>ChatGPT queries (green) will show AI-generated responses</li>
+                <li>Try dark mode using the theme toggle button</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Load all widget dependencies -->
+    <link rel="stylesheet" href="styles.css">
+    <script src="utils.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="widget.js"></script>
+    
+    <script>
+        // Helper function to test queries
+        function testQuery(query) {
+            if (window.chatWidget) {
+                // Expand the widget
+                window.chatWidget.expand();
+                
+                // Set the query
+                window.chatWidget.elements.chatInput.value = query;
+                
+                // Trigger search after a short delay
+                setTimeout(() => {
+                    window.chatWidget.handleSearch();
+                }, 500);
+            } else {
+                alert('Widget not loaded yet. Please wait a moment and try again.');
+            }
+        }
+        
+        // Check server status
+        fetch('http://localhost:3000/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: 'test' })
+        })
+        .then(response => {
+            const statusDiv = document.querySelector('.status');
+            if (response.ok) {
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = '<strong>✅ Server Status:</strong> Connected to ChatGPT API on port 3000';
+            } else {
+                throw new Error('Server not responding');
+            }
+        })
+        .catch(error => {
+            const statusDiv = document.querySelector('.status');
+            statusDiv.className = 'status error';
+            statusDiv.innerHTML = '<strong>❌ Server Status:</strong> Cannot connect to server. Make sure to run: <code>node server.js</code>';
+        });
+    </script>
+</body>
+</html>

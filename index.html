@@ -1,0 +1,76 @@
+<!-- Chat Widget v2 HTML Structure -->
+<div id="chatWidgetV2" class="chat-widget-v2" data-theme="light">
+    <div class="widget-container">
+        
+        <!-- Main Input Container -->
+        <div class="input-container collapsed" id="inputContainer">
+            <input type="text" 
+                   class="chat-input" 
+                   id="chatInput" 
+                   placeholder="Ask anything..."
+                   autocomplete="off"
+                   spellcheck="false">
+            
+            <!-- Action Buttons (Hidden when collapsed) -->
+            <div class="action-buttons" id="actionButtons">
+                <button class="btn-theme" id="themeToggle" aria-label="Toggle theme">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <!-- Sun icon -->
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                <button class="btn-mic" id="micButton" aria-label="Voice input">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 1 1-14 0v-2m7 9v4m-3 0h6" stroke="currentColor" stroke-width="2" fill="none"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Suggestion Pills Container -->
+        <div class="suggestion-container" id="suggestionContainer">
+            <div class="suggestion-track" id="suggestionTrack">
+                <!-- Pills will be dynamically added here -->
+            </div>
+        </div>
+        
+        <!-- Search Results Viewport -->
+        <div class="viewport" id="viewport">
+            <div class="viewport-header">
+                <span class="query-text" id="queryText"></span>
+                <button class="cart-button" id="cartButton" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 2 L9 6 L6 6 L4 20 L20 20 L18 6 L15 6 L15 2 Z"></path>
+                        <circle cx="12" cy="9" r="1"></circle>
+                    </svg>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </button>
+            </div>
+            <div class="viewport-content" id="viewportContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Floating Interactive Progress Bar -->
+        <div class="floating-progress-bar" id="floatingProgressBar">
+            <div class="progress-track" id="progressTrack">
+                <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-thumb" id="progressThumb"></div>
+            </div>
+        </div>
+        
+        <!-- Cart/Checkout Overlay -->
+        <div class="overlay-container" id="overlayContainer">
+            <!-- Dynamic checkout flow content will be loaded here -->
+        </div>
+    </div>
+</div>

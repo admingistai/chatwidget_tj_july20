@@ -1,0 +1,1367 @@
+/* ===================================
+   Chat Widget v2 - Complete Styles
+   =================================== */
+
+/* 1. CSS Variables & Theme System */
+:root {
+    /* Dimensions */
+    --widget-width-collapsed: 200px;
+    --widget-width-expanded: min(90vw, 500px);
+    --widget-height: 48px;
+    --viewport-width: min(90vw, 480px);
+    --viewport-height: 400px;
+    --overlay-height: 90vh;
+    --border-radius: 16px;
+    --border-radius-small: 8px;
+    --border-radius-large: 24px;
+    
+    /* Colors - Light Theme */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F5F5F5;
+    --bg-tertiary: #FAFAFA;
+    --text-primary: #1A1A1A;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+    --border-color: #E0E0E0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-color-dark: rgba(0, 0, 0, 0.15);
+    
+    /* Brand Colors */
+    --gradient-orange: #FF6C1F;
+    --gradient-blue: #6973FF;
+    --gradient-primary: linear-gradient(90deg, var(--gradient-orange), var(--gradient-blue));
+    --success-color: #4CAF50;
+    --error-color: #F44336;
+    --warning-color: #FF9800;
+    
+    /* Animations */
+    --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Shadows */
+    --shadow-small: 0 2px 8px var(--shadow-color);
+    --shadow-medium: 0 4px 16px var(--shadow-color);
+    --shadow-large: 0 8px 32px var(--shadow-color-dark);
+    --shadow-xl: 0 16px 48px var(--shadow-color-dark);
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+    --bg-primary: #1A1A1A;
+    --bg-secondary: #2A2A2A;
+    --bg-tertiary: #333333;
+    --text-primary: #FFFFFF;
+    --text-secondary: #CCCCCC;
+    --text-tertiary: #999999;
+    --border-color: #404040;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-color-dark: rgba(0, 0, 0, 0.5);
+}
+
+/* 2. Base Reset & Typography */
+.chat-widget-v2 * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.chat-widget-v2 {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. Widget Container */
+.widget-container {
+    position: relative;
+}
+
+/* 4. Input Container */
+.input-container {
+    position: relative;
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                var(--gradient-primary) border-box;
+    border-radius: var(--border-radius);
+    border: 2px solid transparent;
+    height: var(--widget-height);
+    transition: width var(--transition-smooth), box-shadow var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: var(--shadow-medium);
+    cursor: pointer;
+    overflow: hidden;
+    
+}
+
+/* Gradient Border Effect */
+/*
+.input-container::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: var(--gradient-primary);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 1;
+    transition: opacity var(--transition-smooth);
+}
+*/
+/* States */
+.input-container.collapsed {
+    width: var(--widget-width-collapsed);
+}
+
+.input-container.expanded {
+    width: var(--widget-width-expanded);
+    cursor: default;
+    box-shadow: var(--shadow-large);
+}
+
+.input-container:hover {
+    box-shadow: var(--shadow-large);
+}
+
+/* 5. Chat Input */
+.chat-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: all var(--transition-smooth);
+}
+
+.input-container.collapsed .chat-input {
+    text-align: center;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.input-container.expanded .chat-input {
+    text-align: left;
+    cursor: text;
+    pointer-events: auto;
+    padding-right: 100px; /* Space for buttons */
+}
+
+.chat-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 1;
+}
+.chat-input:focus {
+    outline: none !important;
+}
+
+/* 6. Action Buttons */
+.action-buttons {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-fast);
+}
+
+.input-container.expanded .action-buttons {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-theme,
+.btn-mic {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--border-radius-small);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    color: var(--text-secondary);
+}
+
+.btn-theme:hover,
+.btn-mic:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.btn-theme svg,
+.btn-mic svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* 7. Suggestion Container */
+.suggestion-container {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 0;
+    right: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all var(--transition-smooth);
+}
+
+.suggestion-container.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.suggestion-track {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.suggestion-track::-webkit-scrollbar {
+    display: none;
+}
+
+.suggestion-pill {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.suggestion-pill:hover {
+    background: var(--bg-secondary);
+    border-color: var(--gradient-blue);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-small);
+}
+
+/* 8. Viewport */
+.viewport {
+    position: absolute;
+    bottom: calc(100% + 60px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    width: var(--viewport-width);
+    height: var(--viewport-height);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-xl);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-smooth);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.viewport.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.viewport-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.query-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.cart-button {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-small);
+}
+
+.cart-button:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-medium);
+}
+
+.cart-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--gradient-orange);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.viewport-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* 9. Floating Interactive Progress Bar */
+.floating-progress-bar {
+    position: absolute;
+    bottom: 55px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90vw, 400px);
+    height: 32px;
+    pointer-events: auto;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.floating-progress-bar.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.progress-track {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+    overflow: visible;
+}
+
+.progress-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    pointer-events: none;
+}
+
+.progress-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: var(--gradient-blue);
+    border: 3px solid var(--bg-primary);
+    border-radius: 50%;
+    cursor: grab;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.progress-thumb:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.progress-thumb.dragging {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure child elements inherit visibility */
+.floating-progress-bar .progress-track,
+.floating-progress-bar .progress-fill,
+.floating-progress-bar .progress-thumb {
+    opacity: inherit;
+    visibility: inherit;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .progress-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .progress-thumb {
+    border-color: var(--bg-primary);
+}
+
+/* 10. Product Carousel */
+.product-carousel {
+    position: relative;
+    margin: -20px;
+}
+
+.carousel-container {
+    overflow: hidden;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.product-card {
+    flex: 0 0 280px;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-medium);
+    overflow: hidden;
+    scroll-snap-align: center;
+    transition: all var(--transition-smooth);
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-large);
+}
+
+.product-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: var(--bg-secondary);
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-smooth);
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 16px;
+}
+
+.product-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.product-brand {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--gradient-orange);
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 12px;
+    margin: 16px 0 0;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-small);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.add-to-cart-btn:active {
+    transform: translateY(0);
+}
+
+.color-swatches {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+}
+
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 2px solid transparent;
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.color-swatch.active {
+    border-color: var(--gradient-blue);
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--gradient-blue);
+}
+
+/* 11. Carousel Navigation */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    pointer-events: none;
+}
+
+.carousel-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-primary);
+    border: none;
+    border-radius: 50%;
+    box-shadow: var(--shadow-medium);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    pointer-events: auto;
+    color: var(--text-primary);
+}
+
+.carousel-btn:hover:not(:disabled) {
+    background: var(--bg-secondary);
+    transform: scale(1.1);
+}
+
+.carousel-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.carousel-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* 12. Cart/Checkout Overlay */
+.overlay-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--overlay-height);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+    box-shadow: 0 -8px 32px var(--shadow-color-dark);
+    transform: translateY(calc(100% + 40px));
+    transition: transform var(--transition-smooth);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    pointer-events: none
+}
+
+.overlay-container.visible {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.overlay-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-small);
+    transition: all var(--transition-fast);
+    color: var(--text-primary);
+}
+
+.back-btn:hover {
+    background: var(--bg-secondary);
+}
+
+.back-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.overlay-title {
+    flex: 1;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-right: 40px; /* Balance with back button */
+}
+
+.overlay-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* 13. Cart Items */
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.cart-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+}
+
+.cart-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--border-radius-small);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cart-item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cart-item-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cart-item-brand {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.cart-item-color {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+}
+
+.cart-item-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.cart-item-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-small);
+    padding: 4px;
+}
+
+.quantity-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    color: var(--text-primary);
+}
+
+.quantity-btn:hover {
+    background: var(--bg-secondary);
+}
+
+.quantity-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.quantity-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    min-width: 20px;
+    text-align: center;
+}
+
+/* 14. Cart Summary */
+.cart-summary {
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.summary-row.total {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.continue-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-top: 16px;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.continue-btn:active {
+    transform: translateY(0);
+}
+
+/* 15. Checkout Forms */
+.checkout-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    gap: 24px;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.progress-step::after {
+    content: '';
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 20px;
+    width: 24px;
+    height: 2px;
+    background: var(--border-color);
+}
+
+.progress-step:last-child::after {
+    display: none;
+}
+
+.progress-step.active .progress-icon {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.progress-step.active ~ .progress-step .progress-icon {
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+}
+
+.progress-step.completed .progress-icon {
+    background: var(--success-color);
+    color: white;
+}
+
+.progress-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.progress-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.progress-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* 16. Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    font-size: 16px;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+    font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--gradient-blue);
+    box-shadow: 0 0 0 3px rgba(105, 115, 255, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.phone-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.country-code-select {
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.form-error {
+    font-size: 14px;
+    color: var(--error-color);
+    margin-top: 4px;
+}
+
+/* 17. Payment Methods */
+.payment-methods {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.payment-method {
+    position: relative;
+}
+
+.payment-method input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.payment-method-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.payment-method input[type="radio"]:checked + .payment-method-label {
+    border-color: var(--gradient-blue);
+    background: var(--bg-tertiary);
+}
+
+.payment-method-icon {
+    width: 48px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-method-icon img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.payment-method-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* 18. Order Confirmation */
+.confirmation-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: var(--success-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.confirmation-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+.confirmation-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.confirmation-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.order-details {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.order-detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.order-detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.order-detail-label {
+    color: var(--text-secondary);
+}
+
+.order-detail-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* 19. Loading States */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bg-secondary);
+    border-top-color: var(--gradient-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 20. Empty States */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+}
+
+.empty-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+.empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.empty-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+/* 21. Responsive Design */
+@media (max-width: 640px) {
+    :root {
+        --viewport-width: calc(100vw - 40px);
+        --viewport-height: 60vh;
+        --overlay-height: 100vh;
+    }
+    
+    .chat-widget-v2 {
+        bottom: 10px;
+    }
+    
+    .viewport {
+        bottom: calc(100% + 40px);
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .product-card {
+        flex: 0 0 240px;
+    }
+    
+    .overlay-container {
+        border-radius: 0;
+    }
+    
+    .floating-progress-bar {
+        width: min(calc(100vw - 40px), 400px);
+        bottom: 50px;
+    }
+    
+    .progress-track {
+        height: 10px;
+    }
+    
+    .progress-thumb {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* 22. Animation Classes */
+.fade-in {
+    animation: fadeIn var(--transition-smooth) ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-up {
+    animation: slideUp var(--transition-smooth) ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.bounce {
+    animation: bounce 0.5s ease-out;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* 23. Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.invisible {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+
+/* 24. Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus styles */
+.chat-widget-v2 button:focus-visible,
+.chat-widget-v2 input:focus-visible,
+.chat-widget-v2 select:focus-visible {
+    outline: 2px solid var(--gradient-blue);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .chat-widget-v2 {
+        --border-color: currentColor;
+        --shadow-color: transparent;
+        --shadow-color-dark: transparent;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .chat-widget-v2 * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 25. Chat Response Styles (ChatGPT) */
+.chat-response {
+    padding: 20px;
+    max-width: 100%;
+}
+
+.response-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Paragraphs in chat responses */
+.response-content p {
+    margin-bottom: 16px;
+}
+
+.response-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Lists in chat responses */
+.response-content ul,
+.response-content ol {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+.response-content li {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.response-content li:last-child {
+    margin-bottom: 0;
+}
+
+/* Code blocks in chat responses */
+.code-block {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    padding: 16px;
+    margin: 16px 0;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.code-block code {
+    color: var(--text-primary);
+    white-space: pre;
+}
+
+/* Dark theme code blocks */
+[data-theme="dark"] .code-block {
+    background: #0d1117;
+    border-color: #30363d;
+}
+
+[data-theme="dark"] .code-block code {
+    color: #e6edf3;
+}
+
+/* Error state for chat responses */
+.error-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+}
+
+.error-state p {
+    margin-bottom: 8px;
+}
+
+.error-state p:first-child {
+    font-size: 18px;
+    color: var(--text-primary);
+}

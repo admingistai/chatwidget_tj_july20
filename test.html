@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget v2 - Test Page</title>
+    
+    <!-- Widget Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* Test page styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .test-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            background: #6973FF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .test-btn:hover {
+            background: #5560E5;
+            transform: translateY(-1px);
+        }
+        
+        .test-btn.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .test-btn.secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .console-output {
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .status-indicator.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-indicator.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .demo-content {
+            padding: 100px 0;
+            text-align: center;
+            color: #999;
+        }
+        
+        .theme-toggle-demo {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        /* Dark theme for test page */
+        body.dark-theme {
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        
+        body.dark-theme .test-section {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        
+        body.dark-theme h1,
+        body.dark-theme h2 {
+            color: #fff;
+        }
+        
+        body.dark-theme .subtitle {
+            color: #ccc;
+        }
+        
+        body.dark-theme .theme-toggle-demo {
+            background: #2a2a2a;
+            border-color: #444;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle-demo" onclick="togglePageTheme()">Toggle Page Theme</button>
+    
+    <div class="test-container">
+        <h1>Chat Widget v2 Test Page</h1>
+        <p class="subtitle">Test all widget features in isolation</p>
+        
+        <div class="test-section">
+            <h2>Widget Status</h2>
+            <div id="widgetStatus" class="status-indicator">
+                <span class="status-dot"></span>
+                <span>Checking widget...</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Widget Controls</h2>
+            <div class="test-controls">
+                <button class="test-btn" onclick="testExpand()">Expand Widget</button>
+                <button class="test-btn" onclick="testCollapse()">Collapse Widget</button>
+                <button class="test-btn secondary" onclick="testSearch('hiking boots')">Search "hiking boots"</button>
+                <button class="test-btn secondary" onclick="testSearch('Marques Brownlee')">Search "Marques Brownlee"</button>
+                <button class="test-btn secondary" onclick="testSearch('running shoes')">Search "running shoes"</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Cart Testing</h2>
+            <div class="test-controls">
+                <button class="test-btn" onclick="testAddToCart()">Add Test Product</button>
+                <button class="test-btn" onclick="testShowCart()">Show Cart</button>
+                <button class="test-btn secondary" onclick="testClearCart()">Clear Cart</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Theme Testing</h2>
+            <div class="test-controls">
+                <button class="test-btn" onclick="testToggleTheme()">Toggle Widget Theme</button>
+                <button class="test-btn secondary" onclick="testGetTheme()">Get Current Theme</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Console Output</h2>
+            <div id="consoleOutput" class="console-output">
+                Console messages will appear here...
+            </div>
+        </div>
+        
+        <div class="demo-content">
+            <p>Scroll down to see the widget at the bottom of the page</p>
+            <p style="margin-top: 600px;">The widget stays fixed at the bottom</p>
+        </div>
+    </div>
+    
+    <!-- Widget Scripts -->
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="widget.js"></script>
+    
+    <script>
+        // Console output helper
+        const consoleOutput = document.getElementById('consoleOutput');
+        const log = (message, type = 'log') => {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#f44' : type === 'success' ? '#4f4' : '#0f0';
+            consoleOutput.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            console.log(message);
+        };
+        
+        // Override console.log for the test page
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            ).join(' ');
+            log(message);
+        };
+        
+        // Check widget status
+        setTimeout(() => {
+            const statusEl = document.getElementById('widgetStatus');
+            if (window.chatWidget) {
+                statusEl.className = 'status-indicator success';
+                statusEl.innerHTML = '<span class="status-dot"></span><span>Widget loaded successfully!</span>';
+                log('✅ Widget initialized', 'success');
+                
+                // List available methods
+                const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(window.chatWidget))
+                    .filter(name => typeof window.chatWidget[name] === 'function' && name !== 'constructor');
+                log('Available methods: ' + methods.join(', '));
+            } else {
+                statusEl.className = 'status-indicator error';
+                statusEl.innerHTML = '<span class="status-dot"></span><span>Widget failed to load</span>';
+                log('❌ Widget not found', 'error');
+            }
+        }, 1000);
+        
+        // Test functions
+        function testExpand() {
+            if (window.chatWidget) {
+                window.chatWidget.expand();
+                log('Widget expanded');
+            } else {
+                log('Widget not available', 'error');
+            }
+        }
+        
+        function testCollapse() {
+            if (window.chatWidget) {
+                window.chatWidget.collapse();
+                log('Widget collapsed');
+            } else {
+                log('Widget not available', 'error');
+            }
+        }
+        
+        function testSearch(query) {
+            if (window.chatWidget) {
+                window.chatWidget.expand();
+                setTimeout(() => {
+                    window.chatWidget.elements.chatInput.value = query;
+                    window.chatWidget.handleSearch();
+                    log(`Searching for: "${query}"`);
+                }, 300);
+            } else {
+                log('Widget not available', 'error');
+            }
+        }
+        
+        function testAddToCart() {
+            if (window.chatWidget && window.chatWidget.cart) {
+                const testProduct = {
+                    id: 'test-001',
+                    name: 'Test Product',
+                    brand: 'Test Brand',
+                    price: 99.99,
+                    image: '/images/products/apex-runner.jpg',
+                    colors: ['#FF0000', '#00FF00', '#0000FF']
+                };
+                window.chatWidget.cart.addToCart(testProduct, 0);
+                log('Added test product to cart', 'success');
+            } else {
+                log('Cart not available', 'error');
+            }
+        }
+        
+        function testShowCart() {
+            if (window.chatWidget && window.chatWidget.cart) {
+                window.chatWidget.cart.showCart();
+                log('Showing cart');
+            } else {
+                log('Cart not available', 'error');
+            }
+        }
+        
+        function testClearCart() {
+            if (window.chatWidget) {
+                window.chatWidget.state.cart = [];
+                window.chatWidget.cart.updateCartBadge();
+                window.chatWidget.cart.saveCart();
+                log('Cart cleared', 'success');
+            } else {
+                log('Widget not available', 'error');
+            }
+        }
+        
+        function testToggleTheme() {
+            if (window.chatWidget) {
+                window.chatWidget.toggleTheme();
+                log(`Theme changed to: ${window.chatWidget.state.theme}`);
+            } else {
+                log('Widget not available', 'error');
+            }
+        }
+        
+        function testGetTheme() {
+            if (window.chatWidget) {
+                log(`Current theme: ${window.chatWidget.state.theme}`);
+            } else {
+                log('Widget not available', 'error');
+            }
+        }
+        
+        // Page theme toggle
+        function togglePageTheme() {
+            document.body.classList.toggle('dark-theme');
+        }
+        
+        // Listen for widget events
+        document.addEventListener('widget-expand', () => {
+            log('Event: Widget expanded', 'success');
+        });
+        
+        document.addEventListener('widget-collapse', () => {
+            log('Event: Widget collapsed', 'success');
+        });
+        
+        document.addEventListener('widget-search', (e) => {
+            log(`Event: Search for "${e.detail.query}" - ${e.detail.results.length} results`, 'success');
+        });
+        
+        document.addEventListener('widget-carousel-shown', (e) => {
+            log(`Event: Carousel shown with ${e.detail.products.length} products`, 'success');
+        });
+        
+        document.addEventListener('widget-theme-change', (e) => {
+            log(`Event: Theme changed to ${e.detail.theme}`, 'success');
+        });
+        
+        // Initial log
+        log('Test page loaded. Widget initializing...');
+    </script>
+</body>
+</html>
