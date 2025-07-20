@@ -333,10 +333,11 @@ class ChatWidgetV2 {
         const message = {
             id: WidgetUtils.generateId(),
             query: query,
-            results: results,
+            results: isProductQuery ? results : [],  // Only save results for product queries
             timestamp: Date.now(),
             type: isProductQuery ? 'product' : 'chat',
-            isCarousel: isMarquesQuery  // Only Marques gets carousel
+            isCarousel: isMarquesQuery,  // Only Marques gets carousel
+            chatResponse: null  // Will be populated for chat queries after ChatGPT responds
         };
         
         this.state.messages.push(message);
@@ -539,6 +540,7 @@ class ChatWidgetV2 {
      * Display ChatGPT response in the viewport
      */
     displayChatResponse(answer) {
+        // Display the response
         this.elements.viewportContent.innerHTML = `
             <div class="chat-response">
                 <div class="response-content">
@@ -546,6 +548,12 @@ class ChatWidgetV2 {
                 </div>
             </div>
         `;
+        
+        // Save the ChatGPT response to the current message in history
+        const currentMessage = this.state.messages[this.state.currentIndex];
+        if (currentMessage && currentMessage.type === 'chat') {
+            currentMessage.chatResponse = answer;
+        }
     }
     
     /**
@@ -733,24 +741,46 @@ class ChatWidgetV2 {
             this.elements.viewport.classList.add('visible');
             this.elements.queryText.textContent = message.query;
             
-            // Re-render the results
-            if (message.isCarousel) {
-                this.elements.viewportContent.innerHTML = ProductCatalog.buildCarousel(message.results, 'marquesCarousel');
-                setTimeout(() => {
-                    ProductCatalog.initializeCarousel('marquesCarousel', this);
-                }, 100);
-            } else {
-                this.elements.viewportContent.innerHTML = ProductCatalog.buildSearchResults(message.query, message.results);
-                if (message.results.length > 0) {
-                    setTimeout(() => {
-                        ProductCatalog.initializeCarousel('searchResultsCarousel', this);
-                    }, 100);
+            // Re-render the results based on message type
+            if (message.type === 'chat') {
+                // This is a ChatGPT response
+                if (message.chatResponse) {
+                    this.displayChatResponse(message.chatResponse);
+                } else {
+                    // Fallback if ChatGPT response wasn't saved
+                    this.elements.viewportContent.innerHTML = `
+                        <div class="chat-response">
+                            <div class="response-content">
+                                <p>Loading previous response...</p>
+                            </div>
+                        </div>
+                    `;
                 }
-            }
-            
-            // Show cart button if needed
-            if (this.elements.cartButton && message.results.length > 0) {
-                this.elements.cartButton.style.display = 'flex';
+                
+                // Hide cart button for chat responses
+                if (this.elements.cartButton) {
+                    this.elements.cartButton.style.display = 'none';
+                }
+            } else {
+                // This is a product query
+                if (message.isCarousel) {
+                    this.elements.viewportContent.innerHTML = ProductCatalog.buildCarousel(message.results, 'marquesCarousel');
+                    setTimeout(() => {
+                        ProductCatalog.initializeCarousel('marquesCarousel', this);
+                    }, 100);
+                } else {
+                    this.elements.viewportContent.innerHTML = ProductCatalog.buildSearchResults(message.query, message.results);
+                    if (message.results.length > 0) {
+                        setTimeout(() => {
+                            ProductCatalog.initializeCarousel('searchResultsCarousel', this);
+                        }, 100);
+                    }
+                }
+                
+                // Show cart button for product results
+                if (this.elements.cartButton && message.results.length > 0) {
+                    this.elements.cartButton.style.display = 'flex';
+                }
             }
         }
     }
