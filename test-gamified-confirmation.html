@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamified Confirmation Test - Chat Widget v2</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .feature-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-list ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .feature-list li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .test-section {
+            background: #e8f4fd;
+            border: 1px solid #bee5ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-btn {
+            background: linear-gradient(90deg, #FF6C1F, #6973FF);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .test-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .preview-image {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Gamified Order Confirmation Test</h1>
+        <p>Test the new interactive order confirmation experience!</p>
+        
+        <div class="feature-list">
+            <h2>✨ New Features:</h2>
+            <ul>
+                <li><strong>Two-section layout:</strong> Payment confirmation + Offer reveal</li>
+                <li><strong>Purple gradient background</strong> with product hero image</li>
+                <li><strong>Interactive "Slide to unlock"</strong> mechanic</li>
+                <li><strong>Smooth animations</strong> on entry and interaction</li>
+                <li><strong>Mobile responsive</strong> with touch support</li>
+                <li><strong>Exclusive offer reveal:</strong> 20% OFF code</li>
+            </ul>
+        </div>
+        
+        <div class="instructions">
+            <strong>📋 How to Test:</strong>
+            <ol>
+                <li>Click "Quick Checkout Test" to simulate a complete order</li>
+                <li>Or add items to cart and complete the full checkout flow</li>
+                <li>On the confirmation page, drag the green button to unlock the offer</li>
+                <li>The offer code "ADVENTURE20" will be revealed</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h3>🧪 Test Options:</h3>
+            
+            <button class="test-btn" onclick="quickCheckoutTest()">
+                Quick Checkout Test
+            </button>
+            
+            <button class="test-btn" onclick="addItemsAndCheckout()">
+                Full Flow: Add Items → Checkout
+            </button>
+            
+            <button class="test-btn" onclick="testSlideInteraction()">
+                Test Slide Mechanics Only
+            </button>
+            
+            <div style="margin-top: 20px;">
+                <strong>Interaction Tips:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li>Drag the green button at least 80% to the left to unlock</li>
+                    <li>Or click anywhere on the slide track as a shortcut</li>
+                    <li>Watch for the pulsing animation on the button</li>
+                    <li>The product image has a floating animation</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <p style="color: #666;">🎯 Expected Result: An engaging, gamified confirmation experience!</p>
+        </div>
+    </div>
+
+    <!-- Load all widget dependencies -->
+    <link rel="stylesheet" href="styles.css">
+    <script src="utils.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="widget.js"></script>
+    
+    <script>
+        // Quick checkout test - simulates completing an order
+        function quickCheckoutTest() {
+            if (!window.chatWidget) {
+                alert('Widget not loaded yet. Please wait and try again.');
+                return;
+            }
+            
+            console.log('🧪 Starting quick checkout test...');
+            
+            // Add a sample item to cart
+            const product = ProductCatalog.hikingProducts[0];
+            window.chatWidget.cart.addToCart(product, 0);
+            
+            // Set up mock shipping and payment data
+            window.chatWidget.state.shippingData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john.doe@example.com',
+                address: '123 Main St',
+                city: 'New York',
+                country: 'US',
+                postalCode: '10001',
+                phone: '+1 (555) 123-4567'
+            };
+            
+            window.chatWidget.state.paymentData = {
+                method: 'card'
+            };
+            
+            // Jump directly to order completion
+            window.chatWidget.cart.currentStep = 3;
+            window.chatWidget.cart.completeOrder();
+            window.chatWidget.cart.showOverlay();
+            
+            console.log('✅ Order confirmation displayed!');
+        }
+        
+        // Full flow test
+        function addItemsAndCheckout() {
+            if (!window.chatWidget) {
+                alert('Widget not loaded yet. Please wait and try again.');
+                return;
+            }
+            
+            // Expand widget
+            window.chatWidget.expand();
+            
+            // Search for products
+            window.chatWidget.elements.chatInput.value = 'hiking shoes';
+            
+            setTimeout(() => {
+                window.chatWidget.handleSearch();
+                alert('1. Add some items to cart\n2. Click the cart button\n3. Complete the checkout flow\n4. See the gamified confirmation!');
+            }, 500);
+        }
+        
+        // Test just the slide interaction
+        function testSlideInteraction() {
+            if (!window.chatWidget) {
+                alert('Widget not loaded yet. Please wait and try again.');
+                return;
+            }
+            
+            // Create a simple test environment
+            const testHTML = `
+                <div style="position: fixed; inset: 0; background: linear-gradient(135deg, #4A148C, #7B1FA2); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="text-align: center;">
+                        <h2 style="color: white; margin-bottom: 40px; font-size: 32px;">Test Slide Interaction</h2>
+                        <div class="slide-to-unlock-container" style="margin: 0 auto;">
+                            <div class="slide-track" id="testSlideTrack">
+                                <span class="slide-text">Slide to unlock</span>
+                                <div class="slide-handle" id="testSlideHandle">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="slide-progress" id="testSlideProgress"></div>
+                            </div>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 40px; padding: 10px 20px; background: white; color: #7B1FA2; border: none; border-radius: 8px; cursor: pointer;">Close Test</button>
+                    </div>
+                </div>
+            `;
+            
+            const testDiv = document.createElement('div');
+            testDiv.innerHTML = testHTML;
+            document.body.appendChild(testDiv.firstElementChild);
+            
+            alert('Try dragging the green button to the left!');
+        }
+        
+        // Log when widget is ready
+        setTimeout(() => {
+            if (window.chatWidget) {
+                console.log('✅ Chat widget loaded and ready for gamified confirmation testing!');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

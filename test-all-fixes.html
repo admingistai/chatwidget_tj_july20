@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test All Fixes - Chat Widget v2</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 { color: #333; }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .test-btn {
+            background: linear-gradient(90deg, #FF6C1F, #6973FF);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test All Recent Fixes</h1>
+        
+        <div class="test-section">
+            <h2>1. Cart Price Calculation Fix</h2>
+            <p>Tests that products with numeric prices work correctly in cart calculations.</p>
+            <button class="test-btn" onclick="testCartPricing()">Test Cart Pricing</button>
+            <div id="priceStatus"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Gamified Confirmation Fixes</h2>
+            <p>Tests the slide-to-unlock mechanic and offer display layout.</p>
+            <button class="test-btn" onclick="testGamifiedConfirmation()">Test Gamified Confirmation</button>
+            <div id="gamifiedStatus"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. ChatGPT Navigation Fix</h2>
+            <p>Tests that ChatGPT responses are saved and can be navigated back to.</p>
+            <button class="test-btn" onclick="testChatGPTNavigation()">Test ChatGPT Navigation</button>
+            <div id="navStatus"></div>
+        </div>
+    </div>
+
+    <!-- Load all widget dependencies -->
+    <link rel="stylesheet" href="styles.css">
+    <script src="utils.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="widget.js"></script>
+    
+    <script>
+        // Test 1: Cart Price Calculation
+        function testCartPricing() {
+            const statusEl = document.getElementById('priceStatus');
+            statusEl.className = 'status info';
+            statusEl.innerHTML = 'Testing cart price calculation...';
+            
+            try {
+                // Create test products with both string and numeric prices
+                const testProducts = [
+                    { price: '$99.99', quantity: 2 },  // String price
+                    { price: 149.99, quantity: 1 },    // Numeric price
+                    { price: '$79.99', quantity: 3 }   // String price
+                ];
+                
+                // Test the calculateSubtotal function
+                const subtotal = WidgetUtils.pricing.calculateSubtotal(testProducts);
+                const expected = (99.99 * 2) + (149.99 * 1) + (79.99 * 3);
+                
+                if (Math.abs(subtotal - expected) < 0.01) {
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = `✅ Cart pricing test passed!<br>
+                        Calculated: $${subtotal.toFixed(2)}<br>
+                        Expected: $${expected.toFixed(2)}`;
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.innerHTML = `❌ Cart pricing test failed!<br>
+                        Calculated: $${subtotal.toFixed(2)}<br>
+                        Expected: $${expected.toFixed(2)}`;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        // Test 2: Gamified Confirmation
+        function testGamifiedConfirmation() {
+            const statusEl = document.getElementById('gamifiedStatus');
+            statusEl.className = 'status info';
+            statusEl.innerHTML = 'Setting up gamified confirmation test...';
+            
+            if (!window.chatWidget) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = '❌ Widget not loaded yet. Please wait and try again.';
+                return;
+            }
+            
+            // Set up test data
+            window.chatWidget.state.shippingData = {
+                email: 'test@example.com'
+            };
+            
+            // Complete a test order
+            window.chatWidget.cart.currentStep = 3;
+            window.chatWidget.cart.completeOrder();
+            window.chatWidget.cart.showCart();
+            
+            // Check for elements
+            setTimeout(() => {
+                const slideHandle = document.querySelector('.slide-handle');
+                const offerSection = document.querySelector('.offer-reveal-section');
+                
+                let issues = [];
+                
+                // Check slide handle position
+                if (slideHandle) {
+                    const computedStyle = window.getComputedStyle(slideHandle);
+                    const leftValue = computedStyle.left;
+                    if (leftValue !== '4px') {
+                        issues.push(`Slide handle left position is ${leftValue} instead of 4px`);
+                    }
+                } else {
+                    issues.push('Slide handle not found');
+                }
+                
+                // Check offer section overflow
+                if (offerSection) {
+                    const computedStyle = window.getComputedStyle(offerSection);
+                    const overflow = computedStyle.overflowY;
+                    if (overflow !== 'auto') {
+                        issues.push(`Offer section overflow-y is ${overflow} instead of auto`);
+                    }
+                } else {
+                    issues.push('Offer section not found');
+                }
+                
+                if (issues.length === 0) {
+                    statusEl.className = 'status success';
+                    statusEl.innerHTML = '✅ Gamified confirmation test passed!<br>- Slide handle starts on left<br>- Offer section has proper overflow';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.innerHTML = '❌ Issues found:<br>' + issues.map(i => `- ${i}`).join('<br>');
+                }
+            }, 500);
+        }
+        
+        // Test 3: ChatGPT Navigation
+        function testChatGPTNavigation() {
+            const statusEl = document.getElementById('navStatus');
+            statusEl.className = 'status info';
+            statusEl.innerHTML = 'Testing ChatGPT navigation...';
+            
+            if (!window.chatWidget) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = '❌ Widget not loaded yet. Please wait and try again.';
+                return;
+            }
+            
+            // Simulate adding a ChatGPT response to messages
+            const testMessage = {
+                id: 'test-msg-1',
+                type: 'chat',
+                query: 'Test question',
+                chatResponse: 'This is a test ChatGPT response.',
+                timestamp: new Date()
+            };
+            
+            window.chatWidget.state.messages.push(testMessage);
+            
+            // Test navigateToMessage function
+            const messageEl = window.chatWidget.navigateToMessage(testMessage);
+            
+            if (messageEl && messageEl.textContent.includes('This is a test ChatGPT response')) {
+                statusEl.className = 'status success';
+                statusEl.innerHTML = '✅ ChatGPT navigation test passed!<br>ChatGPT responses are properly saved and can be navigated to.';
+            } else {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = '❌ ChatGPT navigation test failed!<br>Could not navigate to ChatGPT response.';
+            }
+            
+            // Clean up test message
+            window.chatWidget.state.messages.pop();
+        }
+        
+        // Log when ready
+        setTimeout(() => {
+            if (window.chatWidget) {
+                console.log('✅ All test functions ready!');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

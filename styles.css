@@ -1285,7 +1285,367 @@
     }
 }
 
-/* 25. Chat Response Styles (ChatGPT) */
+/* 25. Gamified Confirmation Styles */
+.gamified-confirmation {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Payment Confirmation Card (30% height) */
+.payment-confirmed-card {
+    flex: 0 0 30%;
+    background: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.confirmation-header-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.confirmation-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.payment-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.payment-icon {
+    font-size: 24px;
+}
+
+.payment-status h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.email-notification {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Offer Reveal Section (70% height) */
+.offer-reveal-section {
+    flex: 1;
+    background: linear-gradient(135deg, #4A148C 0%, #7B1FA2 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.offer-content {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+/* Product Hero Image */
+.product-hero {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.product-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Offer Teaser Text */
+.offer-teaser {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Slide to Unlock Component */
+.slide-to-unlock-container {
+    width: 100%;
+    max-width: 320px;
+    transition: opacity 0.3s ease;
+}
+
+.slide-track {
+    position: relative;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.slide-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    font-weight: 500;
+    pointer-events: none;
+    user-select: none;
+}
+
+.slide-handle {
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #76FF03 0%, #64DD17 100%);
+    border-radius: 50%;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(118, 255, 3, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
+}
+
+.slide-handle.dragging {
+    cursor: grabbing;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(118, 255, 3, 0.6);
+}
+
+.slide-handle svg {
+    color: #1B5E20;
+    pointer-events: none;
+}
+
+.slide-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, rgba(118, 255, 3, 0.3) 0%, rgba(100, 221, 23, 0.3) 100%);
+    border-radius: 30px;
+    transition: width 0.3s ease;
+}
+
+/* Offer Revealed Content */
+.offer-revealed-content {
+    text-align: center;
+    color: white;
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.offer-revealed-content.revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.offer-revealed-content h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.offer-revealed-content p {
+    font-size: 18px;
+    margin-bottom: 12px;
+    opacity: 0.9;
+}
+
+.offer-code {
+    font-size: 20px;
+    margin: 24px 0;
+}
+
+.offer-code strong {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 24px;
+    letter-spacing: 2px;
+}
+
+/* Override continue button for offer section */
+.offer-reveal-section .continue-btn {
+    background: white;
+    color: #7B1FA2;
+    margin-top: 20px;
+}
+
+.offer-reveal-section .continue-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 640px) {
+    .product-hero {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .offer-teaser {
+        font-size: 28px;
+    }
+    
+    .slide-to-unlock-container {
+        max-width: 280px;
+    }
+    
+    .offer-revealed-content h2 {
+        font-size: 28px;
+    }
+}
+
+/* Entry Animations */
+.gamified-confirmation .payment-confirmed-card {
+    animation: slideInFromTop 0.5s ease-out;
+}
+
+.gamified-confirmation .offer-reveal-section {
+    animation: slideInFromBottom 0.5s ease-out 0.2s both;
+}
+
+.gamified-confirmation .product-hero {
+    animation: zoomInFade 0.6s ease-out 0.6s both;
+}
+
+.gamified-confirmation .offer-teaser {
+    animation: fadeInUp 0.5s ease-out 0.8s both;
+}
+
+.gamified-confirmation .slide-to-unlock-container {
+    animation: fadeInUp 0.5s ease-out 1s both;
+}
+
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromBottom {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomInFade {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Pulse animation for slide handle */
+.slide-handle {
+    animation: pulse 2s ease-in-out infinite;
+    animation-delay: 1.5s;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 12px rgba(118, 255, 3, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(118, 255, 3, 0.8);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(118, 255, 3, 0.4);
+    }
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] .payment-confirmed-card {
+    background: var(--bg-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .slide-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 26. Chat Response Styles (ChatGPT) */
 .chat-response {
     padding: 20px;
     max-width: 100%;

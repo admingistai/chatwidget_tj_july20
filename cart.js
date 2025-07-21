@@ -685,38 +685,75 @@ class CartManager {
     renderOrderConfirmation() {
         const overlay = document.getElementById('overlayContainer');
         
+        // Get user email from shipping data
+        const userEmail = this.widget.state.shippingData?.email || 'your email';
+        
+        // Select a random product for the hero image (preferably a boot)
+        const heroProduct = ProductCatalog.hikingProducts[2]; // Storm Shield boot
+        
         const html = `
-            <div class="overlay-content">
-                <div class="confirmation-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                        <path d="M20 6L9 17l-5-5"></path>
-                    </svg>
-                </div>
-                <h2 class="confirmation-title">Order Confirmed!</h2>
-                <p class="confirmation-subtitle">Thank you for your purchase</p>
-                
-                <div class="order-details">
-                    <div class="order-detail-row">
-                        <span class="order-detail-label">Order Number</span>
-                        <span class="order-detail-value">${this.widget.state.orderNumber}</span>
+            <div class="gamified-confirmation">
+                <!-- Payment Confirmation Card (30% height) -->
+                <div class="payment-confirmed-card">
+                    <div class="confirmation-header">
+                        <button class="back-btn" onclick="window.chatWidget.cart.goBack()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <span class="confirmation-header-title">Confirmation</span>
+                        <div style="width: 40px;"></div> <!-- Spacer for centering -->
                     </div>
-                    <div class="order-detail-row">
-                        <span class="order-detail-label">Delivery Address</span>
-                        <span class="order-detail-value">${this.widget.state.shippingData.address}, ${this.widget.state.shippingData.city}</span>
-                    </div>
-                    <div class="order-detail-row">
-                        <span class="order-detail-label">Estimated Delivery</span>
-                        <span class="order-detail-value">3-5 business days</span>
+                    <div class="confirmation-card-content">
+                        <div class="payment-status">
+                            <span class="payment-icon">📧</span>
+                            <h3>Payment confirmed</h3>
+                        </div>
+                        <p class="email-notification">You will receive an email notification<br>to ${userEmail}</p>
                     </div>
                 </div>
                 
-                <button class="continue-btn" onclick="window.chatWidget.cart.closeAndReset()">
-                    Continue Shopping
-                </button>
+                <!-- Offer Reveal Section (70% height) -->
+                <div class="offer-reveal-section">
+                    <div class="offer-content">
+                        <div class="product-hero">
+                            <img src="${heroProduct.image}" alt="${heroProduct.name}" />
+                        </div>
+                        <h2 class="offer-teaser">You've got an offer</h2>
+                        
+                        <!-- Slide to Unlock Component -->
+                        <div class="slide-to-unlock-container">
+                            <div class="slide-track" id="slideTrack">
+                                <span class="slide-text">Slide to unlock</span>
+                                <div class="slide-handle" id="slideHandle">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="slide-progress" id="slideProgress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden offer content (revealed after slide) -->
+                    <div class="offer-revealed-content" id="offerContent" style="display: none;">
+                        <h2>🎉 Exclusive 20% OFF</h2>
+                        <p>Your next purchase of hiking boots!</p>
+                        <p class="offer-code">Code: <strong>ADVENTURE20</strong></p>
+                        <button class="continue-btn" onclick="window.chatWidget.cart.closeAndReset()">
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
             </div>
         `;
         
         overlay.innerHTML = html;
+        
+        // Initialize slide to unlock after DOM is ready
+        setTimeout(() => {
+            this.initializeSlideToUnlock();
+        }, 100);
     }
     
     /**
@@ -738,6 +775,123 @@ class CartManager {
                     break;
             }
         }
+    }
+    
+    /**
+     * Initialize slide to unlock interaction
+     */
+    initializeSlideToUnlock() {
+        const track = document.getElementById('slideTrack');
+        const handle = document.getElementById('slideHandle');
+        const progress = document.getElementById('slideProgress');
+        
+        if (!track || !handle || !progress) return;
+        
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let trackWidth = track.offsetWidth;
+        let handleWidth = handle.offsetWidth;
+        let maxDistance = trackWidth - handleWidth;
+        
+        // Success threshold (80% of track)
+        const successThreshold = 0.8;
+        
+        // Handle start drag
+        const startDrag = (e) => {
+            isDragging = true;
+            startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            handle.classList.add('dragging');
+            e.preventDefault();
+        };
+        
+        // Handle drag movement
+        const doDrag = (e) => {
+            if (!isDragging) return;
+            
+            currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            let distance = currentX - startX;
+            
+            // Constrain to track bounds
+            distance = Math.max(0, Math.min(distance, maxDistance));
+            
+            // Update handle position
+            handle.style.transform = `translateX(${distance}px)`;
+            
+            // Update progress fill
+            const percentage = distance / maxDistance;
+            progress.style.width = `${percentage * 100}%`;
+            
+            // Check if threshold reached
+            if (percentage >= successThreshold) {
+                this.unlockOffer();
+                endDrag();
+            }
+        };
+        
+        // Handle end drag
+        const endDrag = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            handle.classList.remove('dragging');
+            
+            // Get current position percentage
+            const transform = handle.style.transform;
+            const distance = transform ? parseFloat(transform.match(/translateX\(([^)]+)px\)/)?.[1] || 0) : 0;
+            const percentage = distance / maxDistance;
+            
+            // If not at threshold, animate back to start
+            if (percentage < successThreshold) {
+                handle.style.transform = 'translateX(0)';
+                progress.style.width = '0';
+            }
+        };
+        
+        // Mouse events
+        handle.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', endDrag);
+        
+        // Touch events
+        handle.addEventListener('touchstart', startDrag, { passive: false });
+        document.addEventListener('touchmove', doDrag, { passive: false });
+        document.addEventListener('touchend', endDrag);
+        
+        // Also allow clicking on the track as a fallback
+        track.addEventListener('click', (e) => {
+            if (e.target === handle || handle.contains(e.target)) return;
+            this.unlockOffer();
+        });
+    }
+    
+    /**
+     * Unlock and reveal the offer
+     */
+    unlockOffer() {
+        const offerContent = document.getElementById('offerContent');
+        const slideContainer = document.querySelector('.slide-to-unlock-container');
+        const offerTeaser = document.querySelector('.offer-teaser');
+        const productHero = document.querySelector('.product-hero');
+        
+        if (!offerContent || !slideContainer) return;
+        
+        // Hide slide component and teaser
+        slideContainer.style.opacity = '0';
+        offerTeaser.style.opacity = '0';
+        productHero.style.opacity = '0';
+        
+        // After fade out, show offer
+        setTimeout(() => {
+            slideContainer.style.display = 'none';
+            offerTeaser.style.display = 'none';
+            productHero.style.display = 'none';
+            
+            // Reveal offer with animation
+            offerContent.style.display = 'block';
+            setTimeout(() => {
+                offerContent.classList.add('revealed');
+            }, 50);
+        }, 300);
     }
     
     /**
