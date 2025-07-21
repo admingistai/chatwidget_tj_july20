@@ -203,7 +203,10 @@ const WidgetUtils = {
         
         calculateSubtotal(items) {
             return items.reduce((sum, item) => {
-                const price = parseFloat(item.price.replace('$', ''));
+                // Handle both string prices (with $) and numeric prices
+                const price = typeof item.price === 'string' 
+                    ? parseFloat(item.price.replace('$', ''))
+                    : item.price;
                 return sum + (price * item.quantity);
             }, 0);
         },
